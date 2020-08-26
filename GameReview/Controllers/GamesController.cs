@@ -11,6 +11,7 @@ using GameReview.Models.ViewModel;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Runtime.CompilerServices;
 
 namespace GameReview.Controllers
 {
@@ -64,49 +65,59 @@ namespace GameReview.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                gameReviewVM.Game.ImagePath = await SaveImageFileAsync(gameReviewVM.ImageFile);
+
                 _context.Add(gameReviewVM.Game);
-                _context.Add(gameReviewVM.ReviewerGameReview);
-
-
-                string result = "";
-                IFormFile postedFile = gameReviewVM.ImageFile;
-                if (postedFile != null && postedFile.Length > 0)
-                {
-                    // アップロードされたファイル名を取得。ブラウザが IE 
-                    // の場合 postedFile.FileName はクライアント側でのフ
-                    // ルパスになることがあるので Path.GetFileName を使う
-                    string filename =
-                                  Path.GetFileName(postedFile.FileName);
-
-                    // アプリケーションルートの物理パスを取得。Core では
-                    // Server.MapPath は使えないので以下のようにする
-                    string contentRootPath =
-                                    _hostingEnvironment.ContentRootPath;
-                    string filePath = contentRootPath + "\\" +
-                                      "UploadedFiles\\" + filename;
-
-                    using (var stream =
-                                new FileStream(filePath, FileMode.Create))
-                    {
-                        await postedFile.CopyToAsync(stream);
-                    }
-
-                    result = filename + " (" + postedFile.ContentType +
-                             ") - " + postedFile.Length +
-                             " bytes アップロード完了";
-                }
-                else
-                {
-                    result = "ファイルアップロードに失敗しました";
-                }
-
-
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(gameReviewVM);
         }
+
+
+        private async Task<string> SaveImageFileAsync(IFormFile postedFile)
+        {
+            string result = "";
+            
+            if (postedFile != null && postedFile.Length > 0)
+            {
+                // アップロードされたファイル名を取得。ブラウザが IE 
+                // の場合 postedFile.FileName はクライアント側でのフ
+                // ルパスになることがあるので Path.GetFileName を使う
+                string filename =
+                              DateTime.Now.ToString("yyyyMMddhhmmssfff") +  Path.GetFileName(postedFile.FileName);
+
+                // アプリケーションルートの物理パスを取得。Core では
+                // Server.MapPath は使えないので以下のようにする
+                string contentRootPath =
+                                _hostingEnvironment.ContentRootPath;
+                //あらかじめ「UploadedFiles」フォルダを作っとく
+                string filePath = contentRootPath + "\\" +
+                                  "UploadedFiles\\" + filename;
+
+                using (var stream =
+                            new FileStream(filePath, FileMode.Create))
+                {
+                    await postedFile.CopyToAsync(stream);
+                }
+
+                result = filename + " (" + postedFile.ContentType +
+                         ") - " + postedFile.Length +
+                         " bytes アップロード完了";
+
+                return filePath;
+            }
+            else
+            {
+                result = "ファイルアップロードに失敗しました";
+            }
+
+            return "";
+
+        }
+
 
         // GET: Games/Edit/5
         public async Task<IActionResult> Edit(int? id)
