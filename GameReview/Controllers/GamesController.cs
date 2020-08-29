@@ -94,7 +94,7 @@ namespace GameReview.Controllers
                 string contentRootPath =
                                 _hostingEnvironment.ContentRootPath;
                 //あらかじめ「UploadedFiles」フォルダを作っとく
-                string filePath = contentRootPath + "\\" +
+                string filePath = contentRootPath + "\\wwwroot\\" +
                                   "UploadedFiles\\" + filename;
 
                 using (var stream =
@@ -107,7 +107,8 @@ namespace GameReview.Controllers
                          ") - " + postedFile.Length +
                          " bytes アップロード完了";
 
-                return filePath;
+                //物理パスではなく最終的にhtmlで表示する用の相対パスを返す
+                return "\\UploadedFiles\\" + filename;
             }
             else
             {

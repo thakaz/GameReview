@@ -62,7 +62,7 @@ namespace GameReview
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Games}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

@@ -1,4 +1,6 @@
 ﻿@model GameReview.Models.ViewModel.GameReviewVM
+
+@{ 
     ViewData["Title"] = "Create";
 }
 
@@ -19,7 +21,7 @@
                 <label asp-for="ImageFile" class="control-label"></label>
                 <input asp-for="ImageFile" class="form-control" />
                 <span asp-validation-for="ImageFile" class="text-danger"></span>
-                <div><img id="thumbnail" src=""></div>
+                <div><img id="thumbnail" src="" class="img-thumbnail"></div>
 
             </div>
 
