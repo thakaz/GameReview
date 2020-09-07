@@ -58,7 +58,7 @@ namespace GameReview.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReviewerGameReview",
+                name: "Review",
                 columns: table => new
                 {
                     ID = table.Column<int>(nullable: false)
@@ -70,15 +70,15 @@ namespace GameReview.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReviewerGameReview", x => x.ID);
+                    table.PrimaryKey("PK_Review", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_ReviewerGameReview_Game_GameID",
+                        name: "FK_Review_Game_GameID",
                         column: x => x.GameID,
                         principalTable: "Game",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ReviewerGameReview_Reviewer_ReviewerID",
+                        name: "FK_Review_Reviewer_ReviewerID",
                         column: x => x.ReviewerID,
                         principalTable: "Reviewer",
                         principalColumn: "ID",
@@ -91,13 +91,13 @@ namespace GameReview.Data.Migrations
                 column: "GameID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewerGameReview_GameID",
-                table: "ReviewerGameReview",
+                name: "IX_Review_GameID",
+                table: "Review",
                 column: "GameID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewerGameReview_ReviewerID",
-                table: "ReviewerGameReview",
+                name: "IX_Review_ReviewerID",
+                table: "Review",
                 column: "ReviewerID");
         }
 
@@ -107,7 +107,7 @@ namespace GameReview.Data.Migrations
                 name: "GameGenre");
 
             migrationBuilder.DropTable(
-                name: "ReviewerGameReview");
+                name: "Review");
 
             migrationBuilder.DropTable(
                 name: "Game");

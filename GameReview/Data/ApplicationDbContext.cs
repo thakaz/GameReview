@@ -15,6 +15,6 @@ namespace GameReview.Data
         }
         public DbSet<GameReview.Models.Game> Game { get; set; }
         public DbSet<GameReview.Models.Reviewer> Reviewer { get; set; }
-        public DbSet<GameReview.Models.ReviewerGameReview> ReviewerGameReview { get; set; }
+        public DbSet<GameReview.Models.Review> Review { get; set; }
     }
 }

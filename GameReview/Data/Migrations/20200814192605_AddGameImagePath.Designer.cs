@@ -84,7 +84,7 @@ namespace GameReview.Data.Migrations
                     b.ToTable("Reviewer");
                 });
 
-            modelBuilder.Entity("GameReview.Models.ReviewerGameReview", b =>
+            modelBuilder.Entity("GameReview.Models.Review", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -109,7 +109,7 @@ namespace GameReview.Data.Migrations
 
                     b.HasIndex("ReviewerID");
 
-                    b.ToTable("ReviewerGameReview");
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -319,7 +319,7 @@ namespace GameReview.Data.Migrations
                         .HasForeignKey("GameID");
                 });
 
-            modelBuilder.Entity("GameReview.Models.ReviewerGameReview", b =>
+            modelBuilder.Entity("GameReview.Models.Review", b =>
                 {
                     b.HasOne("GameReview.Models.Game", "Game")
                         .WithMany()

@@ -11,7 +11,7 @@ namespace GameReview.Models.ViewModel
     {
         public Game Game { get; set; }
         public Reviewer Reviewer { get; set; }
-        public ReviewerGameReview ReviewerGameReview { get; set; }
+        public Review Review { get; set; }
 
         public IFormFile ImageFile { get; set; }
 
