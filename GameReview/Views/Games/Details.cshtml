@@ -1,4 +1,4 @@
-﻿@model GameReview.Models.Game
+﻿@model GameReview.Models.Review
 
 @{
     ViewData["Title"] = "Details";
@@ -10,30 +10,56 @@
     <h4>Game</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
+
+
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Game.ImagePath)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
+        <dd class="col-sm-10">
+            <div><img id="thumbnail" src="@Html.DisplayFor(model => model.Game.ImagePath)" class="img-thumbnail"></div>
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Developer)
+
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Game.Title)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Developer)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Game.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Publisher)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Game.Developer)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Publisher)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Game.Developer)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReleaseDate)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Game.Publisher)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReleaseDate)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Game.Publisher)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Game.ReleaseDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Game.ReleaseDate)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Grade)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Grade)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Summary)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Summary)
+        </dd>
+
     </dl>
 </div>
 <div>

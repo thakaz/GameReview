@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace GameReview.Controllers
 {
@@ -40,14 +41,20 @@ namespace GameReview.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Game
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (game == null)
+            var viewModel = new Review();
+            viewModel = await _context.Review
+                .Include(i => i.Game)
+                .Include(i => i.Reviewer)
+                .Where(i =>i.ID == id)
+                .Where(i =>i.ReviewerID == 1)
+                .FirstOrDefaultAsync();               
+            
+            if (viewModel == null)
             {
                 return NotFound();
             }
 
-            return View(game);
+            return View(viewModel);
         }
 
         // GET: Games/Create
