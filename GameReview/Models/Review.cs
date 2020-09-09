@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace GameReview.Models
 {
 
-    public enum Grade
+    public enum eGrade
     {
         A,B,C,D,E,
     }
@@ -18,13 +18,15 @@ namespace GameReview.Models
         public int ID { get; set; }
         public int GameID { get; set; }
         public int ReviewerID { get; set; }
-
-
-        public Grade? Grade { get; set; }
+        
+        public eGrade? Grade { get; set; }
         public string Summary { get; set; }
+
+        public string Comment { get; set; }
 
         public Game Game { get; set; }
         public Reviewer Reviewer { get; set; }
+
 
     }
 }

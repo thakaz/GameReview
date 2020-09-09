@@ -20,7 +20,8 @@ namespace GameReview.Models
         [DisplayName("Thumbnail")]
         public string ImagePath { get; set; }
 
-        public ICollection<GameGenre> gameGenres { get; set; }
+        public ICollection<GameGenre> GameGenres { get; set; }
+        public ICollection<Review> Reviews { get; set; }
 
     }
 }

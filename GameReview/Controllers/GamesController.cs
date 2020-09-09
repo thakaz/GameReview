@@ -13,6 +13,8 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore.Internal;
+using System.Collections.Immutable;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace GameReview.Controllers
 {
@@ -30,7 +32,7 @@ namespace GameReview.Controllers
         // GET: Games
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Game.ToListAsync());
+            return View(await _context.Game.Include(i =>i.Reviews).ToListAsync());
         }
 
         // GET: Games/Details/5
@@ -140,7 +142,19 @@ namespace GameReview.Controllers
             {
                 return NotFound();
             }
-            return View(game);
+
+            //常にIDが１
+            var reviewer = await _context.Reviewer.Where(i => i.ID == 1).FirstOrDefaultAsync();
+            var reviewerID = 1; //とりあえず
+
+            var review = await _context.Review.Where(i => i.GameID == game.ID).Where(i =>i.ReviewerID==reviewerID).FirstOrDefaultAsync();
+
+            var vm = new GameReviewVM();
+            vm.Game = game;
+            vm.Review = review;
+            vm.Reviewer = reviewer;
+
+            return View(vm);
         }
 
         // POST: Games/Edit/5
@@ -148,9 +162,9 @@ namespace GameReview.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Developer,Publisher,ReleaseDate")] Game game)
+        public async Task<IActionResult> Edit(int id, GameReviewVM vm)
         {
-            if (id != game.ID)
+            if (id != vm.Game.ID)
             {
                 return NotFound();
             }
@@ -159,12 +173,34 @@ namespace GameReview.Controllers
             {
                 try
                 {
-                    _context.Update(game);
+
+                    vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
+                    _context.Update(vm.Game);
+
+                    //ReviewにGameIDとReviewerIDを設定(わざわざ?)
+                    vm.Review.GameID = vm.Game.ID;
+                    vm.Review.ReviewerID = vm.Reviewer.ID;
+
+                    var tmpReview = await _context.Review.Where(i => i.ReviewerID == vm.Reviewer.ID)
+                                                .Where(i => i.GameID == vm.Game.ID)
+                                                .AsNoTracking().FirstOrDefaultAsync();
+                    
+                    if(tmpReview == null) //既にレビューが登録済み
+                    {
+                        _context.Add(vm.Review);
+                    }
+                    else
+                    {
+                       vm.Review.ID = tmpReview.ID;
+                        
+                        _context.Update(vm.Review);
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GameExists(game.ID))
+                    if (!GameExists(vm.Game.ID))
                     {
                         return NotFound();
                     }
@@ -175,7 +211,7 @@ namespace GameReview.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(game);
+            return View(vm);
         }
 
         // GET: Games/Delete/5

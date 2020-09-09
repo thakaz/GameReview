@@ -1,4 +1,4 @@
-﻿@model GameReview.Models.Game
+﻿@model GameReview.Models.ViewModel.GameReviewVM
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,31 +8,60 @@
 
 <h4>Game</h4>
 <hr />
+
+
+
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Game.ID" />
+            <input type="hidden" asp-for="Reviewer.ID" />
+
             <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+                <img id="thumbnail" src="@Html.DisplayFor(item =>item.Game.ImagePath)" alt="" class="img-thumbnail" />
+
+
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Game.Title" class="control-label"></label>
+                <input asp-for="Game.Title" class="form-control" />
+                <span asp-validation-for="Game.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Developer" class="control-label"></label>
-                <input asp-for="Developer" class="form-control" />
-                <span asp-validation-for="Developer" class="text-danger"></span>
+                <label asp-for="Game.Developer" class="control-label"></label>
+                <input asp-for="Game.Developer" class="form-control" />
+                <span asp-validation-for="Game.Developer" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Publisher" class="control-label"></label>
-                <input asp-for="Publisher" class="form-control" />
-                <span asp-validation-for="Publisher" class="text-danger"></span>
+                <label asp-for="Game.Publisher" class="control-label"></label>
+                <input asp-for="Game.Publisher" class="form-control" />
+                <span asp-validation-for="Game.Publisher" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ReleaseDate" class="control-label"></label>
-                <input asp-for="ReleaseDate" class="form-control" />
-                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                <label asp-for="Game.ReleaseDate" class="control-label"></label>
+                <input asp-for="Game.ReleaseDate" class="form-control" />
+                <span asp-validation-for="Game.ReleaseDate" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label asp-for="Review.Grade" class="control-label"></label>
+                <select asp-for="Review.Grade" asp-items="Html.GetEnumSelectList<eGrade>()">
+                    <option selected="selected" value="">Please forgive me.</option>
+                </select>
+                <span asp-validation-for="Review.Grade" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Review.Summary" class="control-label"></label>
+                <input asp-for="Review.Summary" class="form-control" />
+                <span asp-validation-for="Review.Summary" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -47,3 +76,21 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+
+<script>
+    $('#ImageFile').change(function () {
+        if (this.files.length > 0) {
+            // 選択されたファイル情報を取得
+            var file = this.files[0];
+
+            // readerのresultプロパティに、データURLとしてエンコードされたファイルデータを格納
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = function () {
+                $('#thumbnail').attr('src', reader.result);
+            }
+        }
+    });
+</script>
