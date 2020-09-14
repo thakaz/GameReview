@@ -34,6 +34,11 @@ namespace GameReview
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
+
+            var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+            DbInitializer.SeedingAsync(context);
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +70,11 @@ namespace GameReview
                     pattern: "{controller=Games}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+
+           
+
+
         }
     }
 }
