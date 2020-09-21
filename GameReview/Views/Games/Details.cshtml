@@ -1,7 +1,4 @@
 ﻿@model GameReview.Models.Review
-
-@{
-    ViewData["Title"] = "Details";
 }
 
 <h1>Details</h1>
@@ -58,6 +55,13 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Summary)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Comment)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.Raw(Model.Comment)
         </dd>
 
     </dl>

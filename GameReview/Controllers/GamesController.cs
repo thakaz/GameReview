@@ -15,6 +15,8 @@ using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Markdig;
+using Markdig.SyntaxHighlighting;
 
 namespace GameReview.Controllers
 {
@@ -47,7 +49,7 @@ namespace GameReview.Controllers
             viewModel = await _context.Review
                 .Include(i => i.Game)
                 .Include(i => i.Reviewer)
-                .Where(i =>i.ID == id)
+                .Where(i =>i.GameID == id)
                 .Where(i =>i.ReviewerID == 1)
                 .FirstOrDefaultAsync();               
             
@@ -56,6 +58,14 @@ namespace GameReview.Controllers
                 return NotFound();
             }
 
+            //コメント欄はmarkdown⇒htmlへ変換する
+            var pipline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .UseSyntaxHighlighting()
+                .Build();
+
+            viewModel.Comment = Markdig.Markdown.ToHtml(viewModel.Comment, pipline);
+                        
             return View(viewModel);
         }
 
