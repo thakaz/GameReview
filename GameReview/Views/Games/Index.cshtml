@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<GameReview.Models.Game>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "Index";
@@ -11,71 +13,61 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
+        <tr class="d-flex">
+            <th class="col-2">
                 @Html.DisplayNameFor(model => model.ImagePath)
             </th>
 
-            <th>
+            <th class="col-4">
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Developer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Publisher)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReleaseDate)
-            </th>
-            <th>
+            <th class="col-2">
                 Grade
             </th>
-            <th>
+            <th class="col-2">
                 Summary
             </th>
 
 
-            <th></th>
+            <th class="col-2"></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <img src="@Html.DisplayFor(modelItem =>item.ImagePath)" alt="" class="img-thumbnail" />
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr class="d-flex">
+                <td class="col-2">
+                    <img src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="" class="img-thumbnail img-fluid  h-auto" />
+                </td>
 
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Developer)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Publisher)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReleaseDate)
-            </td>
-            <td>
-                @foreach (var i in item.Reviews)
-                {
-                    @Html.DisplayFor(modelItem => i.Grade)
-                }
-            </td>
-            <td>
-                @foreach (var i in item.Reviews)
-                {
-                    @Html.DisplayFor(modelItem => i.Summary)
-                }
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+                <td class="col-4">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td class="col-2">
+                    @foreach (var i in item.Reviews)
+                    {
+                        @Html.DisplayFor(modelItem => i.Grade)
+                    }
+                </td>
+                <td class="col-2">
+                    @foreach (var i in item.Reviews)
+                    {
+                        @Html.DisplayFor(modelItem => i.Summary)
+                    }
+                </td>
+                <td class="col-2">
+
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <text>|</text>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> <text>|</text>
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    }
+
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
