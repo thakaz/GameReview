@@ -65,7 +65,9 @@ namespace GameReview.Controllers
                 .Build();
 
             viewModel.Comment = Markdig.Markdown.ToHtml(viewModel.Comment, pipline);
-                        
+            viewModel.ProsPoints = Markdig.Markdown.ToHtml(viewModel.ProsPoints, pipline);
+            viewModel.ConsPoints = Markdig.Markdown.ToHtml(viewModel.ConsPoints, pipline);
+
             return View(viewModel);
         }
 
@@ -183,9 +185,10 @@ namespace GameReview.Controllers
             {
                 try
                 {
-
-                    vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
-                    _context.Update(vm.Game);
+                    if (vm.ImageFile != null) {
+                        vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
+                    }
+                        _context.Update(vm.Game);
 
                     //ReviewにGameIDとReviewerIDを設定(わざわざ?)
                     vm.Review.GameID = vm.Game.ID;

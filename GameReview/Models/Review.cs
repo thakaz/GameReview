@@ -27,8 +27,8 @@ namespace GameReview.Models
         public Game Game { get; set; }
         public Reviewer Reviewer { get; set; }
 
-        public IList<ProsPoint> ProsPoints { get; set; }
-        public IList<ConsPoint> ConsPoints { get; set; }
+        public string ProsPoints { get; set; }
+        public string ConsPoints { get; set; }
 
     }
 }

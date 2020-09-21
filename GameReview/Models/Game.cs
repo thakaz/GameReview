@@ -15,7 +15,8 @@ namespace GameReview.Models
         public string Title { get; set; }
         public string Developer { get; set; }
         public string Publisher { get; set; }
-        public DateTime ReleaseDate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? ReleaseDate { get; set; }
 
         [DisplayName("Thumbnail")]
         public string ImagePath { get; set; }
