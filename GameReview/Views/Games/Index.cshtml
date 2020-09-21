@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<GameReview.Models.Game>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "Index";
@@ -31,34 +33,41 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model)
-{
-        <tr class="d-flex">
-            <td class="col-2">
-                <img src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="" class="img-thumbnail img-fluid  h-auto" />
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr class="d-flex">
+                <td class="col-2">
+                    <img src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="" class="img-thumbnail img-fluid  h-auto" />
+                </td>
 
-            <td class="col-4">
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td class="col-2">
-                @foreach (var i in item.Reviews)
-                {
-                    @Html.DisplayFor(modelItem => i.Grade)
-                }
-            </td>
-            <td class="col-2">
-                @foreach (var i in item.Reviews)
-                {
-                    @Html.DisplayFor(modelItem => i.Summary)
-                }
-            </td>
-            <td class="col-2">
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+                <td class="col-4">
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td class="col-2">
+                    @foreach (var i in item.Reviews)
+                    {
+                        @Html.DisplayFor(modelItem => i.Grade)
+                    }
+                </td>
+                <td class="col-2">
+                    @foreach (var i in item.Reviews)
+                    {
+                        @Html.DisplayFor(modelItem => i.Summary)
+                    }
+                </td>
+                <td class="col-2">
+
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
+
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <text>|</text>
+                        <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> <text>|</text>
+                        <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                    }
+
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

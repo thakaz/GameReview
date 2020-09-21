@@ -12,6 +12,8 @@ using GameReview.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 
 namespace GameReview
 {
@@ -36,6 +38,8 @@ namespace GameReview
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
+
+
 
             var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
             DbInitializer.SeedingAsync(context);

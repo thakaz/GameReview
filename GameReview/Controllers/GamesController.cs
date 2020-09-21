@@ -17,6 +17,7 @@ using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Markdig;
 using Markdig.SyntaxHighlighting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameReview.Controllers
 {
@@ -142,6 +143,7 @@ namespace GameReview.Controllers
 
 
         // GET: Games/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -174,6 +176,7 @@ namespace GameReview.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, GameReviewVM vm)
         {
             if (id != vm.Game.ID)
@@ -228,6 +231,7 @@ namespace GameReview.Controllers
         }
 
         // GET: Games/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -248,6 +252,7 @@ namespace GameReview.Controllers
         // POST: Games/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var game = await _context.Game.FindAsync(id);
