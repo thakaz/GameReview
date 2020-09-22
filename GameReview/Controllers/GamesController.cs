@@ -65,9 +65,10 @@ namespace GameReview.Controllers
                 .UseSyntaxHighlighting()
                 .Build();
 
-            viewModel.Comment = Markdig.Markdown.ToHtml(viewModel.Comment, pipline);
-            viewModel.ProsPoints = Markdig.Markdown.ToHtml(viewModel.ProsPoints, pipline);
-            viewModel.ConsPoints = Markdig.Markdown.ToHtml(viewModel.ConsPoints, pipline);
+            //Nullの時はエラーになる
+            viewModel.Comment = Markdig.Markdown.ToHtml(viewModel.Comment ?? "", pipline);
+            viewModel.ProsPoints = Markdig.Markdown.ToHtml(viewModel.ProsPoints ?? "", pipline);
+            viewModel.ConsPoints = viewModel.ConsPoints ??Markdig.Markdown.ToHtml(viewModel.ConsPoints ?? "", pipline);
 
             return View(viewModel);
         }

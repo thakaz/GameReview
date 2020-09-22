@@ -57,8 +57,14 @@
                 </td>
                 <td class="col-2">
 
-                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> 
-
+                    @if (item.Reviews.FirstOrDefault() == null)
+                    {
+                        <text>未評価</text>
+                    }
+                    else
+                    {
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a>
+                    }
                     @if (SignInManager.IsSignedIn(User))
                     {
                         <text>|</text>
