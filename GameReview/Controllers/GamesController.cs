@@ -117,8 +117,7 @@ namespace GameReview.Controllers
                 string contentRootPath =
                                 _hostingEnvironment.ContentRootPath;
                 //あらかじめ「UploadedFiles」フォルダを作っとく
-                string filePath = contentRootPath + "\\wwwroot\\" +
-                                  "UploadedFiles\\" + filename;
+                string filePath = Path.Combine(contentRootPath, "wwwroot", "UploadedFiles" , filename);
 
                 using (var stream =
                             new FileStream(filePath, FileMode.Create))
