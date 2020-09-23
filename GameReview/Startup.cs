@@ -63,7 +63,7 @@ namespace GameReview
                 app.UseHsts();
             }
             //ˆê’UHTTP‚Ì‚İ‚Ì’ÊM‚Å‚·
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
