@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace GameReview
 {
@@ -62,7 +63,13 @@ namespace GameReview
                 app.UseHsts();
             }
             //àÍíUHTTPÇÃÇ›ÇÃí êMÇ≈ééÇ∑
-           // app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();
