@@ -19,16 +19,31 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Game.ID" />
             <input type="hidden" asp-for="Reviewer.ID" />
-            <input type="hidden" asp-for="Game.ImagePath"/>
+            <input type="hidden" asp-for="Game.ImagePath" />
 
             <div class="form-group">
                 <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" class="form-control" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-                <img id="thumbnail" src="@Html.DisplayFor(item =>item.Game.ImagePath)" alt="" class="img-thumbnail" />
+                <div id="dragDropArea">
+                    <div class="drag-drop-inside">
+                        <p class="drag-drop-info">ここにファイルをドロップ</p>
+                        <p>または</p>
+                        <p class="drag-drop-buttons">
+                            <input asp-for="ImageFile" class="form-control-file" onchange="imgPreview(event)" />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        </p>
+                        <div id="previewArea">
+                            <img id="previewImage" src="@Html.DisplayFor(item =>item.Game.ImagePath)" alt="" class="img-thumbnail" />
+                        </div>
+                    </div>
+                </div>
 
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
 
             </div>
+
+
+
+
 
             <div class="form-group">
                 <label asp-for="Game.Title" class="control-label"></label>
@@ -67,17 +82,17 @@
 
         </div>
         <div class="col-md-4">
-            <div class="form-group">
+            <div class="form-group h-75">
                 <label asp-for="Review.ProsPoints" class="control-label"></label>
-                <textarea asp-for="Review.ProsPoints" class="form-control"></textarea> 
+                <textarea asp-for="Review.ProsPoints" class="form-control h-100"></textarea> 
                 <span asp-validation-for="Review.ProsPoints" class="text-danger"></span>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="form-group">
+            <div class="form-group h-75">
                 <label asp-for="Review.ConsPoints" class="control-label"></label>
-                <textarea asp-for="Review.ConsPoints" class="form-control"></textarea> 
+                <textarea asp-for="Review.ConsPoints" class="form-control h-100"></textarea> 
                 <span asp-validation-for="Review.ConsPoints" class="text-danger"></span>
             </div>
         </div>
@@ -108,20 +123,3 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
 
-
-<script>
-    $('#ImageFile').change(function () {
-        if (this.files.length > 0) {
-            // 選択されたファイル情報を取得
-            var file = this.files[0];
-
-            // readerのresultプロパティに、データURLとしてエンコードされたファイルデータを格納
-            var reader = new FileReader();
-            reader.readAsDataURL(file);
-
-            reader.onload = function () {
-                $('#thumbnail').attr('src', reader.result);
-            }
-        }
-    });
-</script>

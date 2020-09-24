@@ -16,7 +16,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Markdig;
-using Markdig.SyntaxHighlighting;
+
 using Microsoft.AspNetCore.Authorization;
 
 namespace GameReview.Controllers
@@ -62,13 +62,12 @@ namespace GameReview.Controllers
             //コメント欄はmarkdown⇒htmlへ変換する
             var pipline = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()
-                .UseSyntaxHighlighting()
                 .Build();
 
             //Nullの時はエラーになる
             viewModel.Comment = Markdig.Markdown.ToHtml(viewModel.Comment ?? "", pipline);
             viewModel.ProsPoints = Markdig.Markdown.ToHtml(viewModel.ProsPoints ?? "", pipline);
-            viewModel.ConsPoints = viewModel.ConsPoints ??Markdig.Markdown.ToHtml(viewModel.ConsPoints ?? "", pipline);
+            viewModel.ConsPoints = Markdig.Markdown.ToHtml(viewModel.ConsPoints ?? "", pipline);
 
             return View(viewModel);
         }
@@ -225,7 +224,9 @@ namespace GameReview.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //画面遷移しない
+                //return RedirectToAction(nameof(Index));
+                return View(vm);
             }
             return View(vm);
         }

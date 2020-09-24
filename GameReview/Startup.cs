@@ -41,9 +41,9 @@ namespace GameReview
             services.AddRazorPages();
 
 
-
-            var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
-            DbInitializer.SeedingAsync(context);
+            //MigrationéûÇ…ÉGÉâÅ[Ç™èoÇÈ
+            //var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+            //DbInitializer.SeedingAsync(context);
 
             
         }

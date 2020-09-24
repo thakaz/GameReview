@@ -69,3 +69,78 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+/* D&Dエリア*/
+#dragDropArea {
+    background-color: #f4f4f4;
+    margin: 10px;
+    padding: 10px;
+    border: #ddd dashed 5px;
+    min-height: 200px;
+    text-align: center;
+}
+
+    #dragDropArea p {
+        color: #999;
+        font-weight: bold;
+        font-size: 14px;
+        font-size: 1.4em;
+    }
+
+    #dragDropArea .drag-drop-buttons {
+        margin-top: 20px;
+        font-size: 12px;
+        font-size: 1.2em;
+    }
+
+.drag-drop-buttons input {
+    margin: auto;
+}
+
+
+
+td img {
+    width: 100px;
+    height: 50px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    object-fit: cover;
+}
+
+
+
+#detailContainer {
+width: 100vw;
+height: 100%;
+background: #fff url("/UploadedFiles/20200924055250733Iconoclasts.jpg") no-repeat center center;
+background-size: cover;
+position: relative;
+z-index: 0;
+overflow: hidden;
+-ms-flex-pack: center;
+-ms-flex-align: center;
+justify-content: center;
+align-items: center;
+display: flex;
+
+
+background-origin: padding-box;
+padding: 4px 1% 2px 1%;
+
+}
+
+#detailContainer:before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    left: -5px;
+    right: -5px;
+    background: inherit;
+    filter:grayscale();
+    z-index: -1;
+}

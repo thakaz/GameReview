@@ -3,39 +3,70 @@
 @inject SignInManager<IdentityUser> SignInManager
 
 
-<h1>Details</h1>
+@{
+    ViewData["Title"] = "詳細";
+}
 
-<div>
+<h1></h1>
+
+<div class="container bg-light">
     <div class="row">
-        <img id="thumbnail" src="@Html.DisplayFor(model => model.Game.ImagePath)" class="img-thumbnail col-sm-3">
+        <img id="thumbnail" src="@Html.DisplayFor(model => model.Game.ImagePath)" class="img-thumbnail col-lg-4 col-sm-6">
 
-        <h4 class="col">
+        <h4 class="col-lg-4 col-sm-6">
 
             @Html.DisplayFor(model => model.Game.Title)
 
         </h4>
 
 
-        <div class="col-sm-4">
-            <dl>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Grade)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Grade)
-                </dd>
+        <div class="col-lg-4 order-lg-3 order-lg-3">
+            <div class="row">
+                <div class="col-lg-6 col-sm-4">
 
-            </dl>
+                    <dl>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.created_at)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.created_at)
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col-lg-6 col-sm-4">
 
-            <dl>
-                <dt>
-                    @Html.DisplayNameFor(model => model.Summary)
-                </dt>
-                <dd>
-                    @Html.DisplayFor(model => model.Summary)
-                </dd>
+                    <dl>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.updated_at)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.updated_at)
+                        </dd>
+                    </dl>
+                </div>
 
-            </dl>
+
+
+                <dl class="col-lg-12 col-sm-4">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Grade)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Grade)
+                    </dd>
+
+                </dl>
+
+                <dl class="col-lg-12">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.Summary)
+                    </dt>
+                    <dd>
+                        @Html.DisplayFor(model => model.Summary)
+                    </dd>
+
+                </dl>
+            </div>
         </div>
     </div>
 
@@ -45,22 +76,22 @@
 
         <dl class="col-sm-4">
 
-            <dt class="col-sm-2">
+            <dt class="">
                 @Html.DisplayNameFor(model => model.Game.Developer)
             </dt>
-            <dd class="col-sm-10">
+            <dd class="">
                 @Html.DisplayFor(model => model.Game.Developer)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="">
                 @Html.DisplayNameFor(model => model.Game.Publisher)
             </dt>
-            <dd class="col-sm-10">
+            <dd class="">
                 @Html.DisplayFor(model => model.Game.Publisher)
             </dd>
-            <dt class="col-sm-2">
+            <dt class="">
                 @Html.DisplayNameFor(model => model.Game.ReleaseDate)
             </dt>
-            <dd class="col-sm-10">
+            <dd class="">
                 @Html.DisplayFor(model => model.Game.ReleaseDate)
             </dd>
 
@@ -70,46 +101,62 @@
 
         </dl>
 
-        <dl class="col-md-4">
+        <div class="col-md-4 mb-2">
+            <div class="card border-success h-100 ">
+                <div class="card-header">@Html.DisplayNameFor(model => model.ProsPoints)</div>
+                <div class="card-body text-success">
+                    <div class="card-text">
+                        @Html.Raw(Model.ProsPoints)
+                    </div>
+                </div>
 
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.ProsPoints)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.Raw(Model.ProsPoints)
-            </dd>
-        </dl>
+            </div>
+        </div>
 
-        <dl class="col-md-4">
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.ConsPoints)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.Raw(Model.ConsPoints)
-            </dd>
-        </dl>
+        <div class="col-md-4  mb-2">
+            <div class="card border-danger h-100">
+                <div class="card-header">@Html.DisplayNameFor(model => model.ConsPoints)</div>
+                <div class="card-body text-danger">
+                    <div class="card-text">
+                        @Html.Raw(Model.ConsPoints)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
 
 
 
     </div>
 
-    <dl class="col">
-        <dt class="col">
-            @Html.DisplayNameFor(model => model.Comment)
-        </dt>
-        <dd class="col">
-            @Html.Raw(Model.Comment)
-        </dd>
+    <div class="m-2">
+        <div class="card border-primary">
+            <div class="card-header">@Html.DisplayNameFor(model => model.Comment)</div>
+            <div class="card-body">
+                <div class="card-text">
+                    @Html.Raw(Model.Comment)
+                </div>
+            </div>
 
-    </dl>
+        </div>
+
+    </div>
 
 
+    <div class="pb-2">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.GameID">Edit</a> <text>|</text>
+        }
+        <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+    </div>
 
-</div>
-<div>
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <a asp-action="Edit" asp-route-id="@Model.GameID">Edit</a> <text>|</text>
-    }
-    <a asp-action="Index">Back to List</a>
-</div>
+
+    <script>
+
+        window.onload = function () {
+            changeBGImage("@Model.Game.ImagePath.ToString().Replace('\\','/')");
+        };
+        
+    </script>
