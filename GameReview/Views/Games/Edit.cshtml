@@ -4,9 +4,8 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>編集</h1>
 
-<h4>Game</h4>
 <hr />
 
 
@@ -34,7 +33,7 @@
                             <span asp-validation-for="ImageFile" class="text-danger"></span>
                         </p>
                         <div id="previewArea">
-                            <img id="previewImage" src="@Html.DisplayFor(item =>item.Game.ImagePath)" alt="" class="img-thumbnail" />
+                            <img id="previewImage" src="@Html.DisplayFor(item => item.Game.ImagePath)" alt="" class="img-thumbnail" />
                         </div>
                     </div>
                 </div>
@@ -86,7 +85,7 @@
         <div class="col-md-4">
             <div class="form-group h-75">
                 <label asp-for="Review.ProsPoints" class="control-label"></label>
-                <textarea asp-for="Review.ProsPoints" class="form-control h-100"></textarea> 
+                <textarea asp-for="Review.ProsPoints" class="form-control h-100"></textarea>
                 <span asp-validation-for="Review.ProsPoints" class="text-danger"></span>
             </div>
         </div>
@@ -94,7 +93,7 @@
         <div class="col-md-4">
             <div class="form-group h-75">
                 <label asp-for="Review.ConsPoints" class="control-label"></label>
-                <textarea asp-for="Review.ConsPoints" class="form-control h-100"></textarea> 
+                <textarea asp-for="Review.ConsPoints" class="form-control h-100"></textarea>
                 <span asp-validation-for="Review.ConsPoints" class="text-danger"></span>
             </div>
         </div>
@@ -106,22 +105,27 @@
     <div class="col">
 
         <label asp-for="Review.Comment" class="control-label"></label>
-        <textarea asp-for="Review.Comment" class="form-control"></textarea>
+        <textarea asp-for="Review.Comment" class="form-control" rows="10"></textarea>
         <span asp-validation-for="Review.Comment" class="text-danger"></span>
 
     </div>
 
-    <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+    <div class="mx-auto">
+        <input type="submit" value="Save" class="btn btn-primary btn-lg mx-auto m-2 d-block" />
     </div>
 
+    <div>
+        <div class="">
+            <a class="btn btn-info" asp-action="Details" asp-route-id="@Model.Game.ID">詳細</a> <text>|</text>
+            <a class="btn btn-secondary" asp-action="Index">リストへ</a>
+        </div>
+    </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
 
