@@ -23,30 +23,6 @@ namespace GameReview.Data
         {
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-
-            var now = DateTime.Now;
-
-            var entries = this.ChangeTracker.Entries()
-                .Where(e => (e.State == EntityState.Added || e.State == EntityState.Modified));
-
-            foreach (var entry in entries)
-            {
-                var type = entry.Entity.GetType();
-                if (entry.State == EntityState.Added && HasCreatedAt(type))
-                {
-                    entry.Property("created_at").CurrentValue = now;
-                }
-                if (HasUpdatedAt(type))
-                {
-                    entry.Property("updated_at").CurrentValue = now;
-                }
-            }
-
-            return base.SaveChangesAsync(cancellationToken);
-        }
-
         private static Dictionary<Type, bool> _entityHasCreatedAtDic = new Dictionary<Type, bool>();
         private static Dictionary<Type, bool> _entityHasUpdatedAtDic = new Dictionary<Type, bool>();
 

@@ -38,9 +38,9 @@ namespace GameReview.Models
 
 
         [DisplayName("作成日")]
-        public DateTime created_at { get; set; }
+        public DateTime? created_at { get; set; }
 
         [DisplayName("最終更新日")]
-        public DateTime updated_at { get; set; }
+        public DateTime? updated_at { get; set; }
     }
 }
