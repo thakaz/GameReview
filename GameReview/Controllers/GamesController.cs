@@ -183,6 +183,10 @@ namespace GameReview.Controllers
                 return NotFound();
             }
 
+            // 更新日設定
+            var now = DateTime.Now;
+            vm.Review.updated_at = now;
+
             if (ModelState.IsValid)
             {
                 try
@@ -190,7 +194,7 @@ namespace GameReview.Controllers
                     if (vm.ImageFile != null) {
                         vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
                     }
-                        _context.Update(vm.Game);
+                    _context.Update(vm.Game);
 
                     //ReviewにGameIDとReviewerIDを設定(わざわざ?)
                     vm.Review.GameID = vm.Game.ID;
@@ -202,6 +206,7 @@ namespace GameReview.Controllers
                     
                     if(tmpReview == null) //既にレビューが登録済み
                     {
+                        vm.Review.created_at = now;
                         _context.Add(vm.Review);
                     }
                     else

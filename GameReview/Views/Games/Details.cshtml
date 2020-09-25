@@ -156,7 +156,7 @@
     <script>
 
         window.onload = function () {
-            changeBGImage("@Model.Game.ImagePath.ToString().Replace('\\','/')");
+            changeBGImage("@Model.Game.ImagePath?.ToString().Replace('\\','/')");
         };
         
     </script>
