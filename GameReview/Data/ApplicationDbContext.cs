@@ -26,25 +26,6 @@ namespace GameReview.Data
         private static Dictionary<Type, bool> _entityHasCreatedAtDic = new Dictionary<Type, bool>();
         private static Dictionary<Type, bool> _entityHasUpdatedAtDic = new Dictionary<Type, bool>();
 
-        private bool HasCreatedAt(Type type)
-        {
-            if (!_entityHasCreatedAtDic.ContainsKey(type))
-            {
-                _entityHasCreatedAtDic[type] = type.GetProperties().Any(p =>
-                    p.Name == "created_at" && p.CanWrite && p.PropertyType == typeof(DateTime));
-            }
-            return _entityHasCreatedAtDic[type];
-        }
-
-        private bool HasUpdatedAt(Type type)
-        {
-            if (!_entityHasCreatedAtDic.ContainsKey(type))
-            {
-                _entityHasCreatedAtDic[type] = type.GetProperties().Any(p =>
-                    p.Name == "updated_at" && p.CanWrite && p.PropertyType == typeof(DateTime));
-            }
-            return _entityHasCreatedAtDic[type];
-        }
 
     }
 }
