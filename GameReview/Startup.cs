@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Authorization;
+using GameReview.Authorization;
 
 namespace GameReview
 {
@@ -36,14 +38,25 @@ namespace GameReview
                 
                 );
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
 
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+
+
+            services.AddScoped<IAuthorizationHandler, ReviewIsOwnerAuthorizationHandler>();
 
             //Migration時にエラーが出る
             //var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
             //DbInitializer.SeedingAsync(context);
+
 
             
         }
@@ -62,7 +75,7 @@ namespace GameReview
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //一旦HTTPのみの通信で試す
+
             app.UseHttpsRedirection();
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions

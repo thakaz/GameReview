@@ -3,15 +3,17 @@ using System;
 using GameReview.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace GameReview.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200928134303_ownerID")]
+    partial class ownerID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,11 +94,14 @@ namespace GameReview.Migrations
                     b.Property<int?>("Grade")
                         .HasColumnType("integer");
 
+                    b.Property<string>("OwnerID")
+                        .HasColumnType("text");
+
                     b.Property<string>("ProsPoints")
                         .HasColumnType("text");
 
-                    b.Property<string>("ReviewerID")
-                        .HasColumnType("text");
+                    b.Property<int>("ReviewerID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Summary")
                         .HasColumnType("text");
@@ -111,7 +116,24 @@ namespace GameReview.Migrations
 
                     b.HasIndex("GameID");
 
+                    b.HasIndex("ReviewerID");
+
                     b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Reviewer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -324,6 +346,12 @@ namespace GameReview.Migrations
                     b.HasOne("GameReview.Models.Game", "Game")
                         .WithMany("Reviews")
                         .HasForeignKey("GameID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameReview.Models.Reviewer", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
