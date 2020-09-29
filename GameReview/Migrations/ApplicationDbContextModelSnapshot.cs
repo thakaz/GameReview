@@ -95,8 +95,8 @@ namespace GameReview.Migrations
                     b.Property<string>("ProsPoints")
                         .HasColumnType("text");
 
-                    b.Property<string>("ReviewerID")
-                        .HasColumnType("text");
+                    b.Property<int>("ReviewerID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Summary")
                         .HasColumnType("text");
@@ -111,7 +111,24 @@ namespace GameReview.Migrations
 
                     b.HasIndex("GameID");
 
+                    b.HasIndex("ReviewerID");
+
                     b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("GameReview.Models.Reviewer", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Reviewer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -324,6 +341,12 @@ namespace GameReview.Migrations
                     b.HasOne("GameReview.Models.Game", "Game")
                         .WithMany("Reviews")
                         .HasForeignKey("GameID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameReview.Models.Reviewer", "Reviewer")
+                        .WithMany()
+                        .HasForeignKey("ReviewerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

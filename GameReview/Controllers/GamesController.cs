@@ -18,10 +18,6 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Markdig;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using GameReview.Authorization;
-
-
 
 namespace GameReview.Controllers
 {
@@ -29,31 +25,20 @@ namespace GameReview.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public GamesController(ApplicationDbContext context,IWebHostEnvironment hostEnvironment,
-                                UserManager<IdentityUser> UserManager,
-                                IAuthorizationService AuthorizationService,
-                                RoleManager<IdentityRole> RoleManager)
+        public GamesController(ApplicationDbContext context,IWebHostEnvironment hostEnvironment)
         {
             _context = context;
             _hostingEnvironment = hostEnvironment;
-            _userManager = UserManager;
-            _authorizationService = AuthorizationService;
-            _roleManager = RoleManager;
         }
 
         // GET: Games
-        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Game.Include(i =>i.Reviews).ToListAsync());
         }
 
         // GET: Games/Details/5
-        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -61,15 +46,12 @@ namespace GameReview.Controllers
                 return NotFound();
             }
 
-            var adminRole = await _roleManager.FindByNameAsync(Constants.ReviewAdministratorsRole);
-            //var adminId = _userManager.
-            var adminUserId = _context.UserRoles.Where(c => c.RoleId == adminRole.Id).FirstOrDefault().UserId;
-
             var viewModel = new Review();
             viewModel = await _context.Review
                 .Include(i => i.Game)
+                .Include(i => i.Reviewer)
                 .Where(i =>i.GameID == id)
-                .Where(i =>i.ReviewerID == _userManager.GetUserId(User) || i.ReviewerID == adminUserId)
+                .Where(i =>i.ReviewerID == 1)
                 .FirstOrDefaultAsync();               
             
             if (viewModel == null)
@@ -91,7 +73,6 @@ namespace GameReview.Controllers
         }
 
         // GET: Games/Create
-        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -102,22 +83,21 @@ namespace GameReview.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<IActionResult> Create(GameReviewVM gameReviewVM)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(gameReviewVM);
+
+                gameReviewVM.Game.ImagePath = await SaveImageFileAsync(gameReviewVM.ImageFile);
+
+                _context.Add(gameReviewVM.Game);
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            gameReviewVM.Game.ImagePath = await SaveImageFileAsync(gameReviewVM.ImageFile);
-
-            _context.Add(gameReviewVM.Game);
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-           
+            return View(gameReviewVM);
         }
+
 
         private async Task<string> SaveImageFileAsync(IFormFile postedFile)
         {
@@ -162,7 +142,7 @@ namespace GameReview.Controllers
 
 
         // GET: Games/Edit/5
-        [Authorize(Roles = "ReviewAdministrators")]
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -174,18 +154,18 @@ namespace GameReview.Controllers
             if (game == null)
             {
                 return NotFound();
-            } 
-
-            var review = await _context.Review.Where(i => i.GameID == game.ID).Where(i =>i.ReviewerID==_userManager.GetUserId(User)).FirstOrDefaultAsync();
-
-            if (game == null)
-            {
-                return NotFound();
             }
+
+            //常にIDが１
+            var reviewer = await _context.Reviewer.Where(i => i.ID == 1).FirstOrDefaultAsync();
+            var reviewerID = 1; //とりあえず
+
+            var review = await _context.Review.Where(i => i.GameID == game.ID).Where(i =>i.ReviewerID==reviewerID).FirstOrDefaultAsync();
 
             var vm = new GameReviewVM();
             vm.Game = game;
             vm.Review = review;
+            vm.Reviewer = reviewer;
 
             return View(vm);
         }
@@ -195,7 +175,7 @@ namespace GameReview.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ReviewAdministrators")]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, GameReviewVM vm)
         {
             if (id != vm.Game.ID)
@@ -207,55 +187,56 @@ namespace GameReview.Controllers
             var now = DateTime.Now;
             vm.Review.updated_at = now;
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(vm);
-            }
+                try
+                {
+                    if (vm.ImageFile != null) {
+                        vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
+                    }
+                    _context.Update(vm.Game);
 
-            try
-            {
-                if (vm.ImageFile != null) {
-                    vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
-                }
-                _context.Update(vm.Game);
+                    //ReviewにGameIDとReviewerIDを設定(わざわざ?)
+                    vm.Review.GameID = vm.Game.ID;
+                    vm.Review.ReviewerID = vm.Reviewer.ID;
+
+                    var tmpReview = await _context.Review.Where(i => i.ReviewerID == vm.Reviewer.ID)
+                                                .Where(i => i.GameID == vm.Game.ID)
+                                                .AsNoTracking().FirstOrDefaultAsync();
                     
-                //ReviewにGameIDを設定(わざわざ?)
-                vm.Review.GameID = vm.Game.ID;
-                vm.Review.ReviewerID = _userManager.GetUserId(User);    
+                    if(tmpReview == null) //既にレビューが登録済み
+                    {
+                        vm.Review.created_at = now;
+                        _context.Add(vm.Review);
+                    }
+                    else
+                    {
+                       vm.Review.ID = tmpReview.ID;
+                        
+                        _context.Update(vm.Review);
+                    }
 
-                var tmpReview = await _context.Review.Where(i => i.ReviewerID == vm.Review.ReviewerID)
-                                            .Where(i => i.GameID == vm.Game.ID)
-                                            .AsNoTracking().FirstOrDefaultAsync();
-
-                //既にレビューが登録済みかどうか判定
-                if (tmpReview == null) 
-                {
-                    vm.Review.created_at = now;
-                    _context.Add(vm.Review);
+                    await _context.SaveChangesAsync();
                 }
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    vm.Review.ID = tmpReview.ID;                        
-                    _context.Update(vm.Review);
+                    if (!GameExists(vm.Game.ID))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GameExists(vm.Game.ID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //画面遷移しない
+                //return RedirectToAction(nameof(Index));
+                return View(vm);
             }
             //画面遷移しない
            TempData["Message"] = "レビューを更新しました！";
+
             return View(vm);
-            
         }
 
         // GET: Games/Delete/5
