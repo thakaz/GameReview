@@ -19,7 +19,7 @@ namespace GameReview.Models
     {
         public int ID { get; set; }
         public int GameID { get; set; }
-        public string ReviewerID { get; set; }
+        public int ReviewerID { get; set; }
 
         [DisplayName("評価")]
         public eGrade? Grade { get; set; }
@@ -29,6 +29,7 @@ namespace GameReview.Models
         public string Comment { get; set; }
 
         public Game Game { get; set; }
+        public Reviewer Reviewer { get; set; }
 
         [DisplayName("特徴")]
         public string ProsPoints { get; set; }
