@@ -122,10 +122,18 @@
     </div>
 </form>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        @if (!String.IsNullOrEmpty((string)TempData["Message"])) {
+            @:toastr.success('@TempData["Message"]');
+        }
+    });
+</script>
 
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
 }
 
 

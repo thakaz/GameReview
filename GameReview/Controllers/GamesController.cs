@@ -91,6 +91,7 @@ namespace GameReview.Controllers
         }
 
         // GET: Games/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -101,7 +102,7 @@ namespace GameReview.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ReviewAdministrators")]
+        [Authorize]
         public async Task<IActionResult> Create(GameReviewVM gameReviewVM)
         {
             if (!ModelState.IsValid)
@@ -109,16 +110,14 @@ namespace GameReview.Controllers
                 return View(gameReviewVM);
             }
 
-
             gameReviewVM.Game.ImagePath = await SaveImageFileAsync(gameReviewVM.ImageFile);
 
             _context.Add(gameReviewVM.Game);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-            
+           
         }
-
 
         private async Task<string> SaveImageFileAsync(IFormFile postedFile)
         {
@@ -208,52 +207,55 @@ namespace GameReview.Controllers
             var now = DateTime.Now;
             vm.Review.updated_at = now;
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    if (vm.ImageFile != null) {
-                        vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
-                    }
-                    _context.Update(vm.Game);
-                    
-                    //ReviewにGameIDとReviewerIDを設定(わざわざ?)
-                    vm.Review.GameID = vm.Game.ID;
-                    
-                    var tmpReview = await _context.Review.Where(i => i.ReviewerID == _userManager.GetUserId(User))
-                                                .Where(i => i.GameID == vm.Game.ID)
-                                                .AsNoTracking().FirstOrDefaultAsync();
-                    
-                    if(tmpReview == null) //既にレビューが登録済み
-                    {
-                        vm.Review.created_at = now;
-                        _context.Add(vm.Review);
-                    }
-                    else
-                    {
-                       vm.Review.ID = tmpReview.ID;
-                        
-                        _context.Update(vm.Review);
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GameExists(vm.Game.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                //画面遷移しない
-                //return RedirectToAction(nameof(Index));
                 return View(vm);
             }
+
+            try
+            {
+                if (vm.ImageFile != null) {
+                    vm.Game.ImagePath = await SaveImageFileAsync(vm.ImageFile);
+                }
+                _context.Update(vm.Game);
+                    
+                //ReviewにGameIDを設定(わざわざ?)
+                vm.Review.GameID = vm.Game.ID;
+                vm.Review.ReviewerID = _userManager.GetUserId(User);    
+
+                var tmpReview = await _context.Review.Where(i => i.ReviewerID == vm.Review.ReviewerID)
+                                            .Where(i => i.GameID == vm.Game.ID)
+                                            .AsNoTracking().FirstOrDefaultAsync();
+
+                //既にレビューが登録済みかどうか判定
+                if (tmpReview == null) 
+                {
+                    vm.Review.created_at = now;
+                    _context.Add(vm.Review);
+                }
+                else
+                {
+                    vm.Review.ID = tmpReview.ID;                        
+                    _context.Update(vm.Review);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!GameExists(vm.Game.ID))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            //画面遷移しない
+           TempData["Message"] = "せいこうしました";
             return View(vm);
+            
         }
 
         // GET: Games/Delete/5

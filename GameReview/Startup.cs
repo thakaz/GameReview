@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Authorization;
 using GameReview.Authorization;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GameReview
 {
@@ -42,6 +44,11 @@ namespace GameReview
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddRazorPages();
+
+            services.Configure<CookieTempDataProviderOptions>(options =>
+            {
+                options.Cookie.Name = "temp";
+            });
 
             services.AddAuthorization(options =>
             {
