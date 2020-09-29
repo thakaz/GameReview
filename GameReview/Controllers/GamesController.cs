@@ -253,7 +253,7 @@ namespace GameReview.Controllers
                 }
             }
             //画面遷移しない
-           TempData["Message"] = "せいこうしました";
+           TempData["Message"] = "レビューを更新しました！";
             return View(vm);
             
         }
