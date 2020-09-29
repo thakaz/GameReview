@@ -20,8 +20,7 @@ using Markdig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using GameReview.Authorization;
-
-
+using Microsoft.Extensions.Logging;
 
 namespace GameReview.Controllers
 {
@@ -32,23 +31,30 @@ namespace GameReview.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger _logger;
+
 
         public GamesController(ApplicationDbContext context,IWebHostEnvironment hostEnvironment,
                                 UserManager<IdentityUser> UserManager,
                                 IAuthorizationService AuthorizationService,
-                                RoleManager<IdentityRole> RoleManager)
+                                RoleManager<IdentityRole> RoleManager,
+                                ILogger<GamesController> logger)
         {
             _context = context;
             _hostingEnvironment = hostEnvironment;
             _userManager = UserManager;
             _authorizationService = AuthorizationService;
             _roleManager = RoleManager;
+            _logger = logger;
         }
 
         // GET: Games
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
+
+            _logger.LogError($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
+
             return View(await _context.Game.Include(i =>i.Reviews).ToListAsync());
         }
 
@@ -167,14 +173,16 @@ namespace GameReview.Controllers
         {
             if (id == null)
             {
+                _logger.LogError($"id not found {DateTime.UtcNow.ToLongTimeString()}");
                 return NotFound();
             }
 
             var game = await _context.Game.FindAsync(id);
             if (game == null)
             {
+                _logger.LogError($"Game == NULL {DateTime.UtcNow.ToLongTimeString()}");
                 return NotFound();
-            } 
+            }
 
             var review = await _context.Review.Where(i => i.GameID == game.ID).Where(i =>i.ReviewerID==_userManager.GetUserId(User)).FirstOrDefaultAsync();
 
@@ -200,6 +208,7 @@ namespace GameReview.Controllers
         {
             if (id != vm.Game.ID)
             {
+                _logger.LogError($"id != Game.ID _ POST EDIT {DateTime.UtcNow.ToLongTimeString()}");
                 return NotFound();
             }
 
@@ -209,6 +218,7 @@ namespace GameReview.Controllers
 
             if (!ModelState.IsValid)
             {
+                _logger.LogError($"Modelstate.NotValid _ POST EDIT {DateTime.UtcNow.ToLongTimeString()}");
                 return View(vm);
             }
 
@@ -231,6 +241,7 @@ namespace GameReview.Controllers
                 if (tmpReview == null) 
                 {
                     vm.Review.created_at = now;
+                    
                     _context.Add(vm.Review);
                 }
                 else
@@ -241,14 +252,16 @@ namespace GameReview.Controllers
 
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException e)
             {
                 if (!GameExists(vm.Game.ID))
                 {
+                    _logger.LogError($"{e} {DateTime.UtcNow.ToLongTimeString()}");
                     return NotFound();
                 }
                 else
                 {
+                    _logger.LogError($"{e} {DateTime.UtcNow.ToLongTimeString()}");
                     throw;
                 }
             }
