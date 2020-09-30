@@ -51,38 +51,46 @@ namespace GameReview.Controllers
 
         // GET: Games
         [AllowAnonymous]
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(IndexVM.SortCondEnum SortCond,string searchString)
         {
 
             _logger.LogInformation($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
 
-            ViewData["SortParm"] = sortOrder;
+            ViewData["CurrentFilter"] = searchString;
 
-            var games = _context.Game.Include(g =>g.Reviews);
+            var games = _context.Game.Include(g => g.Reviews);
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                games = games.Where(g => g.Title.Contains(searchString)).Include(g => g.Reviews);
+            }
 
             IOrderedQueryable<Game> orderedGames = null;
-            //プロパティを文字列で指定とかできないの？
 
-            switch (sortOrder)
+            switch (SortCond)
             {
-                case "title":
+                case IndexVM.SortCondEnum.not_sort:
+                    orderedGames = games.OrderByDescending(g => g.ID);
+                    break;
+                case IndexVM.SortCondEnum.title:
                     orderedGames = games.OrderBy(g => g.Title);
                     break;
-                case "title_desc":
-                    orderedGames = games.OrderByDescending(g => g.Title);
-                    break;
-                case "grade":
+                case IndexVM.SortCondEnum.grade:
                     orderedGames = games.OrderBy(g => g.Reviews.FirstOrDefault().Grade);
                     break;
-                case "grade_desc":
-                    orderedGames = games.OrderByDescending(g => g.Reviews.FirstOrDefault().Grade);
+                case IndexVM.SortCondEnum.release_date:
+                    orderedGames = games.OrderByDescending(g => g.ReleaseDate);
                     break;
                 default:
                     orderedGames = games.OrderByDescending(g => g.ID);
                     break;
             }
 
-            return View(await orderedGames.ToListAsync());
+            var indexVM = new IndexVM();
+            indexVM.Game = await orderedGames.ToListAsync();
+            indexVM.SortCond = SortCond;
+
+            return View(indexVM);
         }
 
         // GET: Games/Details/5
