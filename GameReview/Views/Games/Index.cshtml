@@ -1,16 +1,44 @@
-﻿@model IEnumerable<GameReview.Models.Game>
+﻿@model GameReview.Models.ViewModel.IndexVM
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 
 @{
     ViewData["Title"] = "一覧";
+
 }
 
-    <h1>一覧</h1>
+<a asp-action="Create">Create New</a>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+<div class="d-flex justify-content-between bd-highlight">
+
+    <div class="p-2 bd-highlight">
+        <form class="form-inline" asp-action="Index" method="get">
+            <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" class="form-control" />
+            <input type="submit" value="&#xf002" class="fas btn btn-primary form-control" />
+
+            <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-window-close"></i></a>
+
+
+        </form>
+    </div>
+    <div class="p-2 bd-highlight">
+
+        <form method="get" asp-action="Index" class="form-inline" name="sortSelectForm">
+
+            <div class="form-group">
+                <label> 並び替え:</label>
+                <select asp-for="SortCond"
+                        asp-items="Html.GetEnumSelectList<GameReview.Models.ViewModel.IndexVM.SortCondEnum>()"
+                        class="form-control" onchange="sortFormSubmit(this.value)">
+                </select>
+            </div>
+        </form>
+    </div>
+
+
+</div>
+
 <div class="table-responsive">
     <table class="table  table-striped table-hover">
         <thead class="thead-light">
@@ -20,13 +48,15 @@
                 </th>
 
                 <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Title)
+                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Title)
+                </th>
+
+                <th class="text-nowrap">
+                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Reviews.FirstOrDefault().Grade)
+
                 </th>
                 <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Reviews.FirstOrDefault().Grade)
-                </th>
-                <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Reviews.FirstOrDefault().Summary)
+                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Reviews.FirstOrDefault().Summary)
                 </th>
 
 
@@ -34,7 +64,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Game)
             {
                 <tr class="">
                     <td>
@@ -43,6 +73,7 @@
 
                     <td>
                         @Html.DisplayFor(modelItem => item.Title)
+
                     </td>
                     <td>
                         @foreach (var i in item.Reviews)
@@ -60,7 +91,7 @@
 
                         @if (item.Reviews.FirstOrDefault() == null)
                         {
-                        <button class="btn btn-secondary disabled">未評価</button>
+                            <button class="btn btn-secondary disabled">未評価</button>
 
                         }
                         else
@@ -70,8 +101,8 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <text>|</text>
-                            <a class="btn btn-info"asp-action="Edit" asp-route-id="@item.ID">編集</a> <text>|</text>
-                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID">削除</a>
+                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.ID">編集</a> <text>|</text>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID"><i class="fas fa-trash-alt"></i></a>
                         }
 
                     </td>

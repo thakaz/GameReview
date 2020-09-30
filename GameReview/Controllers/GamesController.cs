@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using GameReview.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.Xml;
 
 namespace GameReview.Controllers
 {
@@ -50,12 +51,46 @@ namespace GameReview.Controllers
 
         // GET: Games
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(IndexVM.SortCondEnum SortCond,string searchString)
         {
 
-            _logger.LogError($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
+            _logger.LogInformation($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
 
-            return View(await _context.Game.Include(i =>i.Reviews).ToListAsync());
+            ViewData["CurrentFilter"] = searchString;
+
+            var games = _context.Game.Include(g => g.Reviews);
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                games = games.Where(g => g.Title.Contains(searchString)).Include(g => g.Reviews);
+            }
+
+            IOrderedQueryable<Game> orderedGames = null;
+
+            switch (SortCond)
+            {
+                case IndexVM.SortCondEnum.not_sort:
+                    orderedGames = games.OrderByDescending(g => g.ID);
+                    break;
+                case IndexVM.SortCondEnum.title:
+                    orderedGames = games.OrderBy(g => g.Title);
+                    break;
+                case IndexVM.SortCondEnum.grade:
+                    orderedGames = games.OrderBy(g => g.Reviews.FirstOrDefault().Grade);
+                    break;
+                case IndexVM.SortCondEnum.release_date:
+                    orderedGames = games.OrderByDescending(g => g.ReleaseDate);
+                    break;
+                default:
+                    orderedGames = games.OrderByDescending(g => g.ID);
+                    break;
+            }
+
+            var indexVM = new IndexVM();
+            indexVM.Game = await orderedGames.ToListAsync();
+            indexVM.SortCond = SortCond;
+
+            return View(indexVM);
         }
 
         // GET: Games/Details/5

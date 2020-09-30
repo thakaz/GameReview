@@ -52,3 +52,7 @@ function imgPreview(event, f = null) {
 function changeBGImage(imgPath) {
     document.querySelector('#detailContainer').style.backgroundImage ='url("' + imgPath + '")'
 }
+
+function sortFormSubmit(value) {
+    document.sortSelectForm.submit();
+}
