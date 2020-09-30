@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using GameReview.Authorization;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.Xml;
 
 namespace GameReview.Controllers
 {
@@ -50,12 +51,38 @@ namespace GameReview.Controllers
 
         // GET: Games
         [AllowAnonymous]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
 
-            _logger.LogError($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
+            _logger.LogInformation($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
 
-            return View(await _context.Game.Include(i =>i.Reviews).ToListAsync());
+            ViewData["SortParm"] = sortOrder;
+
+            var games = _context.Game.Include(g =>g.Reviews);
+
+            IOrderedQueryable<Game> orderedGames = null;
+            //プロパティを文字列で指定とかできないの？
+
+            switch (sortOrder)
+            {
+                case "title":
+                    orderedGames = games.OrderBy(g => g.Title);
+                    break;
+                case "title_desc":
+                    orderedGames = games.OrderByDescending(g => g.Title);
+                    break;
+                case "grade":
+                    orderedGames = games.OrderBy(g => g.Reviews.FirstOrDefault().Grade);
+                    break;
+                case "grade_desc":
+                    orderedGames = games.OrderByDescending(g => g.Reviews.FirstOrDefault().Grade);
+                    break;
+                default:
+                    orderedGames = games.OrderByDescending(g => g.ID);
+                    break;
+            }
+
+            return View(await orderedGames.ToListAsync());
         }
 
         // GET: Games/Details/5
