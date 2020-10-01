@@ -110,16 +110,20 @@ namespace GameReview.Controllers
                 return NotFound();
             }
 
+            var game = new Game();
+            game = _context.Game.Where(g => g.ID == id).FirstOrDefault();
+
             var adminRole = await _roleManager.FindByNameAsync(Constants.ReviewAdministratorsRole);
             //var adminId = _userManager.
             var adminUserId = _context.UserRoles.Where(c => c.RoleId == adminRole.Id).FirstOrDefault().UserId;
 
-            var viewModel = new Review();
-            viewModel = await _context.Review
-                .Include(i => i.Game)
+            
+            var viewModel = await _context.Review
                 .Where(i =>i.GameID == id)
                 .Where(i =>i.ReviewerID == _userManager.GetUserId(User) || i.ReviewerID == adminUserId)
-                .FirstOrDefaultAsync();               
+                .FirstOrDefaultAsync() ?? new Review() {GameID=(int)id };
+
+            viewModel.Game = game;
             
             if (viewModel == null)
             {
