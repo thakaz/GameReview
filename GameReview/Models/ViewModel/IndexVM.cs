@@ -11,6 +11,7 @@ namespace GameReview.Models.ViewModel
 
         public enum SortCondEnum
         {
+
             [Display(Name = "デフォルト")]
             not_sort,
             [Display(Name = "タイトル")]
@@ -23,7 +24,7 @@ namespace GameReview.Models.ViewModel
 
         public IEnumerable<Game> Game { get; set; }
 
-        public SortCondEnum SortCond { get; set; }
+        public SortCondEnum? SortCond { get; set; }
 
     }
 }
