@@ -144,3 +144,8 @@ padding: 4px 1% 2px 1%;
     filter:grayscale();
     z-index: -1;
 }
+
+
+.Index-Summary{
+    height: 3rem;
+}

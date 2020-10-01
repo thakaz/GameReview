@@ -4,6 +4,7 @@
 
 @{
     ViewData["Title"] = "一覧";
+    var isAuthorized = User.IsInRole(GameReview.Authorization.Constants.ReviewAdministratorsRole);
 
 }
 
@@ -15,6 +16,7 @@
     <div class="p-2 bd-highlight">
         <form class="form-inline" asp-action="Index" method="get">
             <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" class="form-control" />
+            <input type="hidden" name="SortCond" value="@ViewData["SortCond"]"/>
             <input type="submit" value="&#xf002" class="fas btn btn-primary form-control" />
 
             <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-window-close"></i></a>
@@ -32,6 +34,7 @@
                         asp-items="Html.GetEnumSelectList<GameReview.Models.ViewModel.IndexVM.SortCondEnum>()"
                         class="form-control" onchange="sortFormSubmit(this.value)">
                 </select>
+                <input type="hidden" name="SearchString" value="@ViewData["CurrentFilter"]" />
             </div>
         </form>
     </div>
@@ -39,76 +42,59 @@
 
 </div>
 
-<div class="table-responsive">
-    <table class="table  table-striped table-hover">
-        <thead class="thead-light">
-            <tr class="">
-                <th class="text-nowrap">
-                    #
-                </th>
 
-                <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Title)
-                </th>
-
-                <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Reviews.FirstOrDefault().Grade)
-
-                </th>
-                <th class="text-nowrap">
-                    @Html.DisplayNameFor(model => model.Game.FirstOrDefault().Reviews.FirstOrDefault().Summary)
-                </th>
+<div class="row">
+    @foreach (var item in Model.Game)
+    {
 
 
-                <th class=""></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Game)
-            {
-                <tr class="">
-                    <td>
-                        <img src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="" class="" />
-                    </td>
+    <div class="col-lg-6 p-1">
+        @if (isAuthorized) { 
+        <a class="float-right" asp-action="Delete" asp-route-id="@item.ID"><i class="fas fa-trash-alt"></i></a>
+        }
+        <div class="card mb-3" style="">
+            <div class="row no-gutters">
+                <div class=" col-sm-5 d-flex align-items-center justify-content-center bg-dark">
+                    <div class=" d-none d-sm-block">
+                        <a asp-action="Details" asp-route-id="@item.ID">
+                            <img src="@Html.DisplayFor(modelItem => item.ImagePath)" alt="" class="w-100" />
+                        </a>
+                    </div>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Title)
+                </div>
+                <div class="col-sm-6 col-10">
+                    <div class="card-body">
+                        <a asp-action="Details" asp-route-id="@item.ID">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                        </a>
+                        <p class="card-text Index-Summary">
+                            <small>
+                                @foreach (var i in item.Reviews)
+                                {
+                                    @Html.DisplayFor(modelItem => i.Summary)
+                                }
+                            </small>
+                        </p>
 
-                    </td>
-                    <td>
+                    </div>
+                </div>
+                <div class="col-sm-1 col-2  bg-light d-flex ">
+                    <p class="mx-auto display-4">
                         @foreach (var i in item.Reviews)
                         {
                             @Html.DisplayFor(modelItem => i.Grade)
                         }
-                    </td>
-                    <td>
-                        @foreach (var i in item.Reviews)
-                        {
-                            @Html.DisplayFor(modelItem => i.Summary)
-                        }
-                    </td>
-                    <td class="text-nowrap float-right">
+                    </p>
 
-                        @if (item.Reviews.FirstOrDefault() == null)
-                        {
-                            <button class="btn btn-secondary disabled">未評価</button>
+                </div>
 
-                        }
-                        else
-                        {
-                            <a class="btn btn-info" asp-action="Details" asp-route-id="@item.ID">詳細</a>
-                        }
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <text>|</text>
-                            <a class="btn btn-info" asp-action="Edit" asp-route-id="@item.ID">編集</a> <text>|</text>
-                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.ID"><i class="fas fa-trash-alt"></i></a>
-                        }
+            </div>
+        </div>
 
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+    </div>
+
+    }
+
 </div>
 

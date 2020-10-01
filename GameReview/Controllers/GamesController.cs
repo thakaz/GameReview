@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Identity;
 using GameReview.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.Xml;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GameReview.Controllers
 {
@@ -51,8 +52,15 @@ namespace GameReview.Controllers
 
         // GET: Games
         [AllowAnonymous]
-        public async Task<IActionResult> Index(IndexVM.SortCondEnum SortCond,string searchString)
+        public async Task<IActionResult> Index(IndexVM.SortCondEnum? SortCond,string searchString)
         {
+
+            if (SortCond == null && TempData["SortCond"] != null)
+            {
+                SortCond = (IndexVM.SortCondEnum)TempData["SortCond"];              
+            }
+
+            TempData["SortCond"] = SortCond;
 
             _logger.LogInformation($"INDEX {DateTime.UtcNow.ToLongTimeString()}");
 
@@ -152,6 +160,10 @@ namespace GameReview.Controllers
             }
 
             gameReviewVM.Game.ImagePath = await SaveImageFileAsync(gameReviewVM.ImageFile);
+
+            var now = DateTime.Now;
+            gameReviewVM.Game.created_at = now;
+            gameReviewVM.Game.updated_at = now;
 
             _context.Add(gameReviewVM.Game);
 
